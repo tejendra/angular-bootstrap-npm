@@ -10,6 +10,7 @@ angular.module("ui.bootstrap.tpls", ["template/accordion/accordion-group.html","
 angular.module('ui.bootstrap.collapse', [])
 
   .directive('collapse', ['$animate', function ($animate) {
+
     return {
       link: function (scope, element, attrs) {
         function expand() {
@@ -1983,7 +1984,7 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.position'])
 .controller('DropdownController', ['$scope', '$attrs', '$parse', 'dropdownConfig', 'dropdownService', '$animate', '$position', '$document', '$compile', '$templateRequest', function($scope, $attrs, $parse, dropdownConfig, dropdownService, $animate, $position, $document, $compile, $templateRequest) {
   var self = this,
     scope = $scope.$new(), // create a child scope so we are not polluting original one
-	templateScope,
+  templateScope,
     openClass = dropdownConfig.openClass,
     getIsOpen,
     setIsOpen = angular.noop,
@@ -5312,7 +5313,7 @@ angular.module("template/accordion/accordion-group.html", []).run(["$templateCac
     "    </h4>\n" +
     "  </div>\n" +
     "  <div class=\"panel-collapse collapse\" collapse=\"!isOpen\">\n" +
-    "	  <div class=\"panel-body\" ng-transclude></div>\n" +
+    "   <div class=\"panel-body\" ng-transclude></div>\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
@@ -5415,14 +5416,14 @@ angular.module("template/datepicker/month.html", []).run(["$templateCache", func
 angular.module("template/datepicker/popup.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/datepicker/popup.html",
     "<ul class=\"dropdown-menu\" ng-if=\"isOpen\" style=\"display: block\" ng-style=\"{top: position.top+'px', left: position.left+'px'}\" ng-keydown=\"keydown($event)\" ng-click=\"$event.stopPropagation()\">\n" +
-    "	<li ng-transclude></li>\n" +
-    "	<li ng-if=\"showButtonBar\" style=\"padding:10px 9px 2px\">\n" +
-    "		<span class=\"btn-group pull-left\">\n" +
-    "			<button type=\"button\" class=\"btn btn-sm btn-info\" ng-click=\"select('today')\">{{ getText('current') }}</button>\n" +
-    "			<button type=\"button\" class=\"btn btn-sm btn-danger\" ng-click=\"select(null)\">{{ getText('clear') }}</button>\n" +
-    "		</span>\n" +
-    "		<button type=\"button\" class=\"btn btn-sm btn-success pull-right\" ng-click=\"close()\">{{ getText('close') }}</button>\n" +
-    "	</li>\n" +
+    " <li ng-transclude></li>\n" +
+    " <li ng-if=\"showButtonBar\" style=\"padding:10px 9px 2px\">\n" +
+    "   <span class=\"btn-group pull-left\">\n" +
+    "     <button type=\"button\" class=\"btn btn-sm btn-info\" ng-click=\"select('today')\">{{ getText('current') }}</button>\n" +
+    "     <button type=\"button\" class=\"btn btn-sm btn-danger\" ng-click=\"select(null)\">{{ getText('clear') }}</button>\n" +
+    "   </span>\n" +
+    "   <button type=\"button\" class=\"btn btn-sm btn-success pull-right\" ng-click=\"close()\">{{ getText('close') }}</button>\n" +
+    " </li>\n" +
     "</ul>\n" +
     "");
 }]);
@@ -5463,7 +5464,7 @@ angular.module("template/modal/window.html", []).run(["$templateCache", function
     "<div modal-render=\"{{$isRendered}}\" tabindex=\"-1\" role=\"dialog\" class=\"modal\"\n" +
     "    modal-animation-class=\"fade\"\n" +
     "    modal-in-class=\"in\"\n" +
-    "	ng-style=\"{'z-index': 1050 + index*10, display: 'block'}\" ng-click=\"close($event)\">\n" +
+    " ng-style=\"{'z-index': 1050 + index*10, display: 'block'}\" ng-click=\"close($event)\">\n" +
     "    <div class=\"modal-dialog\" ng-class=\"size ? 'modal-' + size : ''\"><div class=\"modal-content\" modal-transclude></div></div>\n" +
     "</div>\n" +
     "");
