@@ -10,7 +10,6 @@ angular.module("ui.bootstrap.tpls", ["template/accordion/accordion-group.html","
 angular.module('ui.bootstrap.collapse', [])
 
   .directive('collapse', ['$animate', function ($animate) {
-
     return {
       link: function (scope, element, attrs) {
         function expand() {
@@ -535,7 +534,7 @@ angular.module('ui.bootstrap.carousel', [])
     } else if (currentIndex > index) {
       currentIndex--;
     }
-    
+
     //clean the currentSlide when no more slide
     if (slides.length === 0) {
       self.currentSlide = null;
@@ -3446,7 +3445,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                     hide();
                   }
                 });
-                
+
                 tooltipLinkedScope.$watch(function() {
                   if (!repositionScheduled) {
                     repositionScheduled = true;
@@ -3864,7 +3863,7 @@ angular.module('ui.bootstrap.progressbar', [])
 
         bar.recalculatePercentage = function() {
             bar.percent = +(100 * bar.value / bar.max).toFixed(2);
-			
+
             var totalPercentage = 0;
             self.bars.forEach(function (bar) {
                 totalPercentage += bar.percent;
@@ -3967,10 +3966,10 @@ angular.module('ui.bootstrap.rating', [])
 
     this.stateOn = angular.isDefined($attrs.stateOn) ? $scope.$parent.$eval($attrs.stateOn) : ratingConfig.stateOn;
     this.stateOff = angular.isDefined($attrs.stateOff) ? $scope.$parent.$eval($attrs.stateOff) : ratingConfig.stateOff;
-    var tmpTitles = angular.isDefined($attrs.titles)  ? $scope.$parent.$eval($attrs.titles) : ratingConfig.titles ;    
+    var tmpTitles = angular.isDefined($attrs.titles)  ? $scope.$parent.$eval($attrs.titles) : ratingConfig.titles ;
     this.titles = angular.isArray(tmpTitles) && tmpTitles.length > 0 ?
       tmpTitles : ratingConfig.titles;
-    
+
     var ratingStates = angular.isDefined($attrs.ratingStates) ? $scope.$parent.$eval($attrs.ratingStates) :
                         new Array( angular.isDefined($attrs.max) ? $scope.$parent.$eval($attrs.max) : ratingConfig.max );
     $scope.range = this.buildTemplateObjects(ratingStates);
@@ -3982,7 +3981,7 @@ angular.module('ui.bootstrap.rating', [])
     }
     return states;
   };
-  
+
   this.getTitle = function(index) {
     if (index >= this.titles.length) {
       return index + 1;
@@ -3990,7 +3989,7 @@ angular.module('ui.bootstrap.rating', [])
       return this.titles[index];
     }
   };
-  
+
   $scope.rate = function(value) {
     if ( !$scope.readonly && value >= 0 && value <= $scope.range.length ) {
       ngModelCtrl.$setViewValue(ngModelCtrl.$viewValue === value ? 0 : value);
@@ -4660,10 +4659,10 @@ angular.module('ui.bootstrap.timepicker', [])
     selected = addMinutes( selected, minutes );
     refresh();
   }
-  
+
   $scope.showSpinners = angular.isDefined($attrs.showSpinners) ?
     $scope.$parent.$eval($attrs.showSpinners) : timepickerConfig.showSpinners;
-  
+
   $scope.incrementHours = function() {
     if (!$scope.noIncrementHours()) {
       addMinutesToSelected(hourStep * 60);
