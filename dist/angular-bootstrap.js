@@ -3461,7 +3461,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               if(trigger === 'mouseenter') {
                 tooltip.bind('mouseenter', cancelTransitionTimeout);
 
-                tooltip.bind('mouseleave', () => {
+                tooltip.bind('mouseleave', function() {
                   if(tooltipLinkedScope.rightClickFlag) {
                     tooltipLinkedScope.rightClickFlag = false;
                     return;
@@ -3472,7 +3472,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
                   // reset flag after 500ms so that popup is
                   //rendered when hovering over trigger element
-                  $timeout(()=>{
+                  $timeout(function() {
                     ttScope.transitionFromPopup = false;
                   }, 500);
                   hideTooltipBind();
@@ -3480,7 +3480,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
                 // right click event on popover triggers mouseout event which closes the popover
                 // set flag to indicate right click was clicked
-                tooltip.bind('contextmenu', () => {
+                tooltip.bind('contextmenu', function() {
                   tooltipLinkedScope.rightClickFlag = true;
                 });
               }
