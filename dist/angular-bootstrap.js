@@ -3168,9 +3168,9 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
    *     $tooltipProvider.options( { placement: 'left' } );
    *   });
    */
-	this.options = function( value ) {
-		angular.extend( globalOptions, value );
-	};
+  this.options = function( value ) {
+    angular.extend( globalOptions, value );
+  };
 
   /**
    * This allows you to extend the set of trigger mappings available. E.g.:
@@ -3255,9 +3255,51 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             var popupTimeout;
             var appendToBody = angular.isDefined( options.appendToBody ) ? options.appendToBody : false;
             var triggers = getTriggers( undefined );
+            var trigger = attrs[ prefix + 'Trigger' ];
             var hasEnableExp = angular.isDefined(attrs[prefix+'Enable']);
             var ttScope = scope.$new(true);
             var repositionScheduled = false;
+
+            var _window = angular.element($window.window);
+
+            /**
+             * @param {Boolean} popover-reposition Reposition open popover on window resize.
+             * Defaults to true.
+             */
+            function prepReposition() {
+              var val = attrs[prefix + 'Reposition'];
+
+              if (val !== 'false') {
+                _window.on('resize', positionTooltipAsync);
+              }
+            }
+
+            /**
+             * @description On click event, if click was on the
+             * popup do not close it otherwise close all open popups
+             */
+            function onClickAway(e) {
+              if(!e.target.hasAttribute(directiveName)) {
+                var elem = angular.element(e.target);
+                while(elem[0].nodeName !== 'HTML') {
+                  if (elem.hasClass('popover') && elem.hasClass('in')) {
+                    return;
+                  }
+                  elem = elem.parent();
+                }
+                hideTooltipBind();
+              }
+            }
+
+            /**
+             * @description Prevents calling removeToolTip() by stopping timeout
+             */
+            function cancelTransitionTimeout(){
+              if ( transitionTimeout ) {
+                $timeout.cancel( transitionTimeout );
+                transitionTimeout = null;
+              }
+            }
 
             var positionTooltip = function () {
               if (!tooltip) { return; }
@@ -3291,6 +3333,18 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
             // Show the tooltip with delay if specified, otherwise show it immediately
             function showTooltipBind() {
+
+              /**
+               * When hovering on trigger element from popover
+               * cancel removeTooltip timeout to prevent destroying popover
+               * and return from function to prevent creating another popover on top of current one
+               */
+              if(ttScope.transitionFromPopup) {
+                ttScope.transitionFromPopup = false;
+                cancelTransitionTimeout();
+                return;
+              }
+
               if(hasEnableExp && !scope.$eval(attrs[prefix+'Enable'])) {
                 return;
               }
@@ -3352,12 +3406,14 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             // Hide the tooltip popup element.
             function hide() {
               // First things first: we don't show it anymore.
-              ttScope.isOpen = false;
+              // Don't show it anymore only if trigger doesn't equal mouseenter
+              if(trigger !== 'mouseenter') {
+                ttScope.isOpen = false;
+              }
 
               //if tooltip is going to be shown after delay, we must cancel this
               $timeout.cancel( popupTimeout );
               popupTimeout = null;
-
               // And now we remove it from the DOM. However, if we have animation, we
               // need to wait for it to expire beforehand.
               // FIXME: this is a placeholder for a port of the transitions library.
@@ -3400,11 +3456,38 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                     });
                   }
                 });
-                
+              }
+
+              if(trigger === 'mouseenter') {
+                tooltip.bind('mouseenter', cancelTransitionTimeout);
+
+                tooltip.bind('mouseleave', () => {
+                  if(tooltipLinkedScope.rightClickFlag) {
+                    tooltipLinkedScope.rightClickFlag = false;
+                    return;
+                  }
+                  // use this flag to prevent creating another popup
+                  // in the event user hovers from popup back to trigger element
+                  ttScope.transitionFromPopup = true;
+
+                  // reset flag after 500ms so that popup is
+                  //rendered when hovering over trigger element
+                  $timeout(()=>{
+                    ttScope.transitionFromPopup = false;
+                  }, 500);
+                  hideTooltipBind();
+                });
+
+                // right click event on popover triggers mouseout event which closes the popover
+                // set flag to indicate right click was clicked
+                tooltip.bind('contextmenu', () => {
+                  tooltipLinkedScope.rightClickFlag = true;
+                });
               }
             }
 
             function removeTooltip() {
+              ttScope.isOpen = false;
               transitionTimeout = null;
               if (tooltip) {
                 tooltip.remove();
@@ -3420,6 +3503,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               prepPopupClass();
               prepPlacement();
               prepPopupDelay();
+              prepReposition();
             }
 
             ttScope.contentExp = function () {
@@ -3487,13 +3571,16 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               triggers.hide.forEach(function(trigger) {
                 element.unbind(trigger, hideTooltipBind);
               });
+
+              // unregister click listener
+              _window.off('click', onClickAway);
+              _window.off('resize', positionTooltipAsync);
             };
 
             function prepTriggers() {
-              var val = attrs[ prefix + 'Trigger' ];
               unregisterTriggers();
 
-              triggers = getTriggers( val );
+              triggers = getTriggers( trigger );
 
               triggers.show.forEach(function(trigger, idx) {
                 if (trigger === triggers.hide[idx]) {
@@ -3503,6 +3590,9 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                   element.bind(triggers.hide[idx], hideTooltipBind);
                 }
               });
+
+              // bind click listener on window to detect click and close open popups
+              _window.on('click', onClickAway);
             }
             prepTriggers();
 
