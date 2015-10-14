@@ -5,6 +5,7 @@
  * Version: 0.13.3 - 2015-08-09
  * License: MIT
  */
+var debounce = require('lodash/function/debounce');
 angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.transition","ui.bootstrap.typeahead"]);
 angular.module("ui.bootstrap.tpls", ["template/accordion/accordion-group.html","template/accordion/accordion.html","template/alert/alert.html","template/carousel/carousel.html","template/carousel/slide.html","template/datepicker/datepicker.html","template/datepicker/day.html","template/datepicker/month.html","template/datepicker/popup.html","template/datepicker/year.html","template/modal/backdrop.html","template/modal/window.html","template/pagination/pager.html","template/pagination/pagination.html","template/tooltip/tooltip-html-popup.html","template/tooltip/tooltip-html-unsafe-popup.html","template/tooltip/tooltip-popup.html","template/tooltip/tooltip-template-popup.html","template/popover/popover-html.html","template/popover/popover-template.html","template/popover/popover.html","template/progressbar/bar.html","template/progressbar/progress.html","template/progressbar/progressbar.html","template/rating/rating.html","template/tabs/tab.html","template/tabs/tabset.html","template/timepicker/timepicker.html","template/typeahead/typeahead-match.html","template/typeahead/typeahead-popup.html"]);
 angular.module('ui.bootstrap.collapse', [])
@@ -3270,7 +3271,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               var val = attrs[prefix + 'Reposition'];
 
               if (val !== 'false') {
-                _window.on('resize', positionTooltipAsync);
+                _window.on('resize', debounce(positionTooltipAsync, 200));
               }
             }
 
@@ -3419,7 +3420,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               // FIXME: this is a placeholder for a port of the transitions library.
               if ( ttScope.animation ) {
                 if (!transitionTimeout) {
-                  transitionTimeout = $timeout(removeTooltip, 500);
+                  transitionTimeout = $timeout(removeTooltip, 200);
                 }
               } else {
                 removeTooltip();
@@ -3470,11 +3471,11 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                   // in the event user hovers from popup back to trigger element
                   ttScope.transitionFromPopup = true;
 
-                  // reset flag after 500ms so that popup is
+                  // reset flag after 200ms so that popup is
                   //rendered when hovering over trigger element
                   $timeout(function() {
                     ttScope.transitionFromPopup = false;
-                  }, 500);
+                  }, 200);
                   hideTooltipBind();
                 });
 
@@ -3600,7 +3601,8 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             ttScope.animation = angular.isDefined(animation) ? !!animation : options.animation;
 
             var appendToBodyVal = scope.$eval(attrs[prefix + 'AppendToBody']);
-            appendToBody = angular.isDefined(appendToBodyVal) ? appendToBodyVal : appendToBody;
+            // if {prefix}AppendToBody attribute exists and is undefined, set it to true otherwise use appendToBody
+            appendToBody = angular.isDefined(appendToBodyVal) ? appendToBodyVal : prefix + 'AppendToBody' in attrs || appendToBody;
 
             // if a tooltip is attached to <body> we need to remove it on
             // location change as its parent scope will probably not be destroyed
