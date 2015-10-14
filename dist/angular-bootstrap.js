@@ -3400,7 +3400,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
               // Return positioning function as promise callback for correct
               // positioning after draw.
-              return positionTooltip;
+              return positionTooltipAsync;
             }
 
             // Hide the tooltip popup element.
