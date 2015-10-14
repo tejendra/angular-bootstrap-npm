@@ -3281,7 +3281,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             function onClickAway(e) {
               if(!e.target.hasAttribute(directiveName)) {
                 var elem = angular.element(e.target);
-                while(angular.isDefined(elem[0].nodeName) && elem[0].nodeName !== 'HTML') {
+                while(angular.isDefined(elem[0]) && elem[0].nodeName !== 'HTML') {
                   if (elem.hasClass('popover') && elem.hasClass('in')) {
                     return;
                   }
