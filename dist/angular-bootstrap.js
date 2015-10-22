@@ -3327,6 +3327,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             function toggleTooltipBind () {
               if ( ! ttScope.isOpen ) {
                 showTooltipBind();
+                $timeout(positionTooltip, 200, false);
               } else {
                 hideTooltipBind();
               }
@@ -3357,7 +3358,10 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                 // This happens if show is triggered multiple times before any hide is triggered.
                 if (!popupTimeout) {
                   popupTimeout = $timeout( show, ttScope.popupDelay, false );
-                  popupTimeout.then(function(reposition){reposition();});
+                  popupTimeout.then(function(reposition){
+                    reposition();
+                    positionTooltipAsync();
+                  });
                 }
               } else {
                 show()();
@@ -3485,6 +3489,8 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                   tooltipLinkedScope.rightClickFlag = true;
                 });
               }
+
+              positionTooltipAsync();
             }
 
             function removeTooltip() {
