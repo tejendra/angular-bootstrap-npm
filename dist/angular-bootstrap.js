@@ -3297,7 +3297,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
              */
             function cancelTransitionTimeout(){
               if ( transitionTimeout ) {
-                $timeout.cancel( transitionTimeout );
+                clearTimeout( transitionTimeout );
                 transitionTimeout = null;
               }
             }
@@ -3352,6 +3352,10 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               }
 
               prepareTooltip();
+              // only bind click events for popups that have click trigger
+              if (trigger === 'click') {
+                _window.on('click', onClickAway);
+              }
 
               if ( ttScope.popupDelay ) {
                 // Do nothing if the tooltip was already scheduled to pop-up.
@@ -3370,9 +3374,6 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
             function hideTooltipBind () {
               hide();
-              if (!$rootScope.$$phase) {
-                $rootScope.$digest();
-              }
             }
 
             // Show the tooltip popup element.
@@ -3383,7 +3384,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               // If there is a pending remove transition, we must cancel it, lest the
               // tooltip be mysteriously removed.
               if ( transitionTimeout ) {
-                $timeout.cancel( transitionTimeout );
+                clearTimeout( transitionTimeout );
                 transitionTimeout = null;
               }
 
@@ -3414,6 +3415,9 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               // Don't show it anymore only if trigger doesn't equal mouseenter
               if(trigger !== 'mouseenter') {
                 ttScope.isOpen = false;
+
+                // remove click listener since tooltip is closed
+                _window.off('click', onClickAway);
               }
 
               //if tooltip is going to be shown after delay, we must cancel this
@@ -3424,7 +3428,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               // FIXME: this is a placeholder for a port of the transitions library.
               if ( ttScope.animation ) {
                 if (!transitionTimeout) {
-                  transitionTimeout = $timeout(removeTooltip, 200);
+                  transitionTimeout = setTimeout(removeTooltip, 200);
                 }
               } else {
                 removeTooltip();
@@ -3597,9 +3601,6 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                   element.bind(triggers.hide[idx], hideTooltipBind);
                 }
               });
-
-              // bind click listener on window to detect click and close open popups
-              _window.on('click', onClickAway);
             }
             prepTriggers();
 
@@ -3623,7 +3624,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
             // Make sure tooltip is destroyed and removed.
             scope.$on('$destroy', function onDestroyTooltip() {
-              $timeout.cancel( transitionTimeout );
+              clearTimeout( transitionTimeout );
               $timeout.cancel( popupTimeout );
               unregisterTriggers();
               removeTooltip();
