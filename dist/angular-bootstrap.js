@@ -3277,13 +3277,15 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
             /**
              * @description On click event, if click was on the
-             * popup do not close it otherwise close all open popups
+             * popup or target, do nothing otherwise close all open popups
+             * toggleTooltipBind () will handle open/close if click occured on target element
              */
             function onClickAway(e) {
               if(!e.target.hasAttribute(directiveName)) {
                 var elem = angular.element(e.target);
                 while(angular.isDefined(elem[0]) && elem[0].nodeName !== 'HTML') {
-                  if (elem.hasClass('popover') && elem.hasClass('in')) {
+                  if ( elem.hasClass('popover') && elem.hasClass('in') ||
+                    elem[0].hasAttribute(directiveName) ) {
                     return;
                   }
                   elem = elem.parent();
