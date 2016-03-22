@@ -3307,6 +3307,9 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
             var positionTooltip = function () {
               if (!tooltip) { return; }
 
+              // Reset the positioning and box size for correct width and height values.
+              tooltip.css({ top: 0, left: 0, width: 'auto', height: 'auto' });
+
               var ttPosition = $position.positionElements(element, tooltip, ttScope.placement, appendToBody);
               ttPosition.top += 'px';
               ttPosition.left += 'px';
@@ -3372,6 +3375,17 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               } else {
                 show()();
               }
+
+              // call reposition after digests and delays are completed
+              // arbitrarily choose 100ms as extra buffer
+              setTimeout(function() {
+                positionTooltipAsync();
+
+                // show the tooltip once its been positioned correctly
+                if (tooltip) {
+                  tooltip.css({'visibility': 'visible'});
+                }
+              }, ttScope.popupDelay + 100);
             }
 
             function hideTooltipBind () {
@@ -3404,6 +3418,10 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
               // And show the tooltip.
               ttScope.isOpen = true;
+
+              // Don't show the tooltip until it has been positioned correctly
+              tooltip.css({'visibility': 'hidden'});
+
               ttScope.$apply(); // digest required as $apply is not called
 
               // Return positioning function as promise callback for correct
