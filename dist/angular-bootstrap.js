@@ -3291,6 +3291,10 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                   elem = elem.parent();
                 }
                 hideTooltipBind();
+              } else if (tooltip != null) {
+                // close all popovers that where opened by onclick trigger
+                // so that there is only one popover open at any time.
+                hideTooltipBind();
               }
             }
 
